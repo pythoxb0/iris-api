@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Iris Flower Prediction</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            color: #333;
+        }
+
+        .container {
+            background-color: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            width: 100%;
+            max-width: 550px;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .flower-icon {
+            font-size: 40px;
+            margin-bottom: 15px;
+            color: #6a11cb;
+        }
+
+        h1 {
+            color: #2c3e50;
+            margin-bottom: 5px;
+            font-size: 28px;
+        }
+
+        .subtitle {
+            color: #7f8c8d;
+            margin-bottom: 25px;
+            font-size: 16px;
+        }
+
+        .form-container {
+            margin-bottom: 20px;
+        }
+
+        .form-group {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 5px 15px;
+            transition: all 0.3s;
+        }
+
+        .form-group:focus-within {
+            background: #e8f4fd;
+            box-shadow: 0 0 0 2px rgba(37, 117, 252, 0.2);
+        }
+
+        .form-group label {
+            width: 120px;
+            text-align: left;
+            font-weight: 500;
+            color: #2c3e50;
+        }
+
+        .form-group input {
+            flex: 1;
+            padding: 12px 10px;
+            border: none;
+            background: transparent;
+            font-size: 16px;
+            outline: none;
+        }
+
+        button {
+            background: linear-gradient(to right, #6a11cb, #2575fc);
+            color: white;
+            border: none;
+            padding: 14px 20px;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            width: 100%;
+            margin-top: 10px;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(106, 17, 203, 0.4);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        button:disabled {
+            background: #bdc3c7;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        #result {
+            margin-top: 25px;
+            padding: 20px;
+            border-radius: 10px;
+            background: #f8f9fa;
+            text-align: center;
+            min-height: 80px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            transition: all 0.3s;
+        }
+
+        .prediction-text {
+            font-size: 20px;
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 10px;
+        }
+
+        .species {
+            font-size: 24px;
+            font-weight: 700;
+            text-transform: capitalize;
+            margin-bottom: 15px;
+        }
+
+        .confidence {
+            font-size: 16px;
+            color: #7f8c8d;
+            margin-bottom: 20px;
+        }
+
+        .probability-container {
+            width: 100%;
+            margin-top: 15px;
+        }
+
+        .probability-bar {
+            display: flex;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .species-label {
+            width: 100px;
+            text-align: left;
+            font-weight: 500;
+            text-transform: capitalize;
+        }
+
+        .bar-container {
+            flex: 1;
+            height: 24px;
+            background: #e0e0e0;
+            border-radius: 12px;
+            overflow: hidden;
+            margin: 0 10px;
+            position: relative;
+        }
+
+        .bar-fill {
+            height: 100%;
+            border-radius: 12px;
+            transition: width 0.8s ease;
+        }
+
+        .probability-value {
+            width: 50px;
+            text-align: right;
+            font-weight: 600;
+        }
+
+        .setosa-bar {
+            background: linear-gradient(to right, #e74c3c, #e67e22);
+        }
+
+        .versicolor-bar {
+            background: linear-gradient(to right, #f39c12, #f1c40f);
+        }
+
+        .virginica-bar {
+            background: linear-gradient(to right, #2ecc71, #27ae60);
+        }
+
+        .loading {
+            display: none;
+            color: #2575fc;
+            margin-top: 10px;
+        }
+
+        .loading i {
+            animation: spin 1s linear infinite;
+            margin-right: 8px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .input-hint {
+            font-size: 12px;
+            color: #7f8c8d;
+            text-align: left;
+            margin-top: 5px;
+            margin-left: 135px;
+        }
+
+        @media (max-width: 576px) {
+            .container {
+                padding: 20px;
+            }
+            
+            .form-group {
+                flex-direction: column;
+                align-items: flex-start;
+                padding: 15px;
+            }
+            
+            .form-group label {
+                width: 100%;
+                margin-bottom: 5px;
+            }
+            
+            .form-group input {
+                width: 100%;
+            }
+            
+            .input-hint {
+                margin-left: 0;
+            }
+            
+            .probability-bar {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            .species-label {
+                width: 100%;
+                margin-bottom: 5px;
+            }
+            
+            .bar-container {
+                width: 100%;
+                margin: 5px 0;
+            }
+            
+            .probability-value {
+                width: 100%;
+                text-align: left;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="flower-icon">
+            <i class="fas fa-seedling"></i>
+        </div>
+        <h1>Iris Flower Prediction</h1>
+        <p class="subtitle">Enter measurements to predict the iris species</p>
+        
+        <div class="form-container">
+            <form id="irisForm">
+                <div class="form-group">
+                    <label for="sepal_length">Sepal Length:</label>
+                    <input type="number" step="0.1" id="sepal_length" name="sepal_length" placeholder="e.g., 5.1" required>
+                </div>
+                <div class="input-hint">Typically between 4.3 and 7.9 cm</div>
+                
+                <div class="form-group">
+                    <label for="sepal_width">Sepal Width:</label>
+                    <input type="number" step="0.1" id="sepal_width" name="sepal_width" placeholder="e.g., 3.5" required>
+                </div>
+                <div class="input-hint">Typically between 2.0 and 4.4 cm</div>
+                
+                <div class="form-group">
+                    <label for="petal_length">Petal Length:</label>
+                    <input type="number" step="0.1" id="petal_length" name="petal_length" placeholder="e.g., 1.4" required>
+                </div>
+                <div class="input-hint">Typically between 1.0 and 6.9 cm</div>
+                
+                <div class="form-group">
+                    <label for="petal_width">Petal Width:</label>
+                    <input type="number" step="0.1" id="petal_width" name="petal_width" placeholder="e.g., 0.2" required>
+                </div>
+                <div class="input-hint">Typically between 0.1 and 2.5 cm</div>
+                
+                <button type="submit" id="predictBtn">Predict Species</button>
+            </form>
+        </div>
+        
+        <div class="loading" id="loading">
+            <i class="fas fa-spinner"></i> Analyzing flower data...
+        </div>
+        
+        <div id="result">
+            <div class="prediction-text">Enter measurements and click "Predict Species"</div>
+        </div>
+    </div>
+
+    <script>
+        const form = document.getElementById('irisForm');
+        const resultDiv = document.getElementById('result');
+        const loadingDiv = document.getElementById('loading');
+        const predictBtn = document.getElementById('predictBtn');
+
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            // Show loading state
+            predictBtn.disabled = true;
+            loadingDiv.style.display = 'block';
+            resultDiv.innerHTML = '';
+            
+            // Prepare data
+            const data = {
+                sepal_length: parseFloat(form.sepal_length.value),
+                sepal_width: parseFloat(form.sepal_width.value),
+                petal_length: parseFloat(form.petal_length.value),
+                petal_width: parseFloat(form.petal_width.value)
+            };
+
+            try {
+                // Send request to the API
+                const res = await fetch('/predict', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+                
+                if (!res.ok) {
+                    throw new Error(`HTTP error! status: ${res.status}`);
+                }
+                
+                const result = await res.json();
+                
+                // Display result
+                displayResult(result);
+                
+            } catch (error) {
+                console.error('Error:', error);
+                resultDiv.innerHTML = `
+                    <div class="prediction-text">Error</div>
+                    <div>Failed to get prediction. Please try again.</div>
+                `;
+                resultDiv.style.background = '#ffeaea';
+            } finally {
+                // Reset button state
+                predictBtn.disabled = false;
+                loadingDiv.style.display = 'none';
+            }
+        });
+
+        function displayResult(result) {
+            // Extract data from the API response
+            const predictedClass = result.predicted_class;
+            const confidence = (result.confidence * 100).toFixed(1);
+            const probabilities = result.class_probabilities;
+            
+            // Format the class name
+            const formattedClass = predictedClass.charAt(0).toUpperCase() + predictedClass.slice(1);
+            
+            // Set species-specific color
+            let speciesColor;
+            if (predictedClass === 'setosa') {
+                speciesColor = '#e74c3c';
+            } else if (predictedClass === 'versicolor') {
+                speciesColor = '#f39c12';
+            } else {
+                speciesColor = '#2ecc71';
+            }
+            
+            // Create probability bars HTML
+            let probabilityBars = '';
+            for (const [species, probability] of Object.entries(probabilities)) {
+                const percentage = (probability * 100).toFixed(1);
+                probabilityBars += `
+                    <div class="probability-bar">
+                        <div class="species-label">${species}</div>
+                        <div class="bar-container">
+                            <div class="bar-fill ${species}-bar" style="width: ${percentage}%"></div>
+                        </div>
+                        <div class="probability-value">${percentage}%</div>
+                    </div>
+                `;
+            }
+            
+            // Set result content
+            resultDiv.innerHTML = `
+                <div class="prediction-text">Predicted Species:</div>
+                <div class="species" style="color: ${speciesColor}">${formattedClass}</div>
+                <div class="confidence">Confidence: ${confidence}%</div>
+                <div class="probability-container">
+                    ${probabilityBars}
+                </div>
+            `;
+            
+            // Add color based on species
+            if (predictedClass === 'setosa') {
+                resultDiv.style.background = '#fdedec';
+            } else if (predictedClass === 'versicolor') {
+                resultDiv.style.background = '#fef9e7';
+            } else {
+                resultDiv.style.background = '#eafaf1';
+            }
+        }
+    </script>
+</body>
+</html>

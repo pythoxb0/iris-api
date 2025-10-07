@@ -1,0 +1,46 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.pycache/
+*.env
+*.venv
+env/
+venv/
+myenv/
+
+# IDEs
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# Python packaging
+*.egg
+*.egg-info/
+dist/
+build/
+*.whl
+
+# Jupyter Notebooks
+.ipynb_checkpoints/
+
+# Machine Learning / Model files
+*.pkl
+*.joblib
+
+# Render / deployment
+*.db
+*.sqlite3
+
+# Misc
+*.bak
+*.swp
